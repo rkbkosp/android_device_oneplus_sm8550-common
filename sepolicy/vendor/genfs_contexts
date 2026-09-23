@@ -1,0 +1,22 @@
+#
+# SPDX-FileCopyrightText: The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Kernel mm_bg proc nodes (CONFIG_OPLUS_MM_BG=y). The kernel keeps genfs entries
+# sorted by descending path length and takes the first prefix match, so each
+# entry also covers every file below the directory (e.g. /proc/fg_info/fg_uids).
+genfscon proc /fg_info        u:object_r:proc_oplus_mm_bg:s0
+genfscon proc /oplus_mem      u:object_r:proc_oplus_mm_bg:s0
+genfscon proc /iolimit        u:object_r:proc_oplus_mm_bg:s0
+genfscon proc /d_oplus_binder u:object_r:proc_oplus_mm_bg:s0
+
+# /proc/oplus_scheduler is intentionally not relabeled here:
+# hardware/oplus/sepolicy/qti/vendor/genfs_contexts already labels it
+# vendor_proc_oplus_scheduler, and a second entry for the same path is rejected
+# by the kernel ("dup genfs entry"), which would fail policy loading. The ODM
+# camera libs (libHIS/libEIS/libAlgoProcess/libDeVIS) write
+# /proc/oplus_scheduler/sched_assist/ux_task*, so they need that label.
+
+# Built-in oplus_bsp_zram_opt module parameters, incl. vm_swappiness.
+genfscon sysfs /module/oplus_bsp_zram_opt u:object_r:sysfs_oplus_zram_opt:s0

@@ -194,6 +194,12 @@ VENDOR_SECURITY_PATCH := $(BOOT_SECURITY_PATCH)
 include device/qcom/sepolicy_vndr/SEPolicy.mk
 include hardware/oplus/sepolicy/qti/SEPolicy.mk
 
+# Device-side policy for the kernel mm_bg interfaces (proc_oplus_mm_bg,
+# sysfs_oplus_zram_opt). They are vendor policy types: system_server (a public
+# platform type in system/sepolicy/public/system_server.te) may be allowed to
+# reach them from the vendor section, and so can vendor userspace later on.
+BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy/vendor
+
 # Verified Boot
 BOARD_AVB_ENABLE := true
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3

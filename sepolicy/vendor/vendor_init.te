@@ -1,0 +1,17 @@
+#
+# SPDX-FileCopyrightText: The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# init.oplus.rc is installed to /odm/etc/init/init.oplus.rc, so its commands run
+# in the vendor_init subcontext (system/core/init/subcontext.cpp matches the
+# /vendor and /odm prefixes; chown/chmod are flagged run_in_subcontext in
+# builtins.cpp). The chown/chmod of the mm_bg nodes needs setattr, and
+# open+read the same way init.te/vendor_init.te describe for chown/chmod.
+# The platform already grants this for every fs_type through its "chown/chmod on
+# pseudo files" rule (system/sepolicy/private/vendor_init.te); these rules keep
+# the hand-off explicit for the two device types instead of depending on it.
+allow vendor_init proc_oplus_mm_bg:dir search;
+allow vendor_init proc_oplus_mm_bg:file { open read setattr };
+allow vendor_init sysfs_oplus_zram_opt:dir search;
+allow vendor_init sysfs_oplus_zram_opt:file { open read setattr };

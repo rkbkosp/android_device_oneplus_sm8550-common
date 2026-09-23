@@ -1,0 +1,19 @@
+#
+# SPDX-FileCopyrightText: The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Kernel mm_bg interfaces (drivers/soc/oplus/mm_bg) as seen through /proc.
+# proc_mkdir/proc_create nodes inherit genfscon proc / (proc) until they are
+# labeled here, and coredomain (system_server) is never allowed to touch
+# proc:file, so the framework cannot reach them without a type of their own.
+# /proc/oplus_mem additionally carries the oplus_bsp_zram_opt /proc knobs
+# (dynamic_swappiness, dynamic_direct_swappiness, swappiness_para).
+# /proc/oplus_scheduler is not part of this type: hardware/oplus already labels
+# it vendor_proc_oplus_scheduler and the camera libs depend on that label.
+type proc_oplus_mm_bg, fs_type, proc_type;
+
+# Built-in oplus_bsp_zram_opt module parameters, i.e.
+# /sys/module/oplus_bsp_zram_opt/parameters/* (vm_swappiness and the two
+# threshold knobs).
+type sysfs_oplus_zram_opt, fs_type, sysfs_type;

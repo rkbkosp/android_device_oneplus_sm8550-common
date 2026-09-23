@@ -21,6 +21,14 @@ on post-fs-data
     mkdir /data/vendor/mmdump/adsp 0777 system system
     chmod 0777 /data/vendor/mmdump/adsp
 
+    # mm_bg kernel nodes (CONFIG_OPLUS_MM_BG=y, so they exist since kernel
+    # boot) are created root:root 0644. system_server writes fg_uids and
+    # vm_swappiness through com.android.server.am.apm.KernelKnobWriter.
+    chown system system /proc/fg_info/fg_uids
+    chmod 0660 /proc/fg_info/fg_uids
+    chown system system /sys/module/oplus_bsp_zram_opt/parameters/vm_swappiness
+    chmod 0660 /sys/module/oplus_bsp_zram_opt/parameters/vm_swappiness
+
     # Enable WLAN SSR
     write /sys/kernel/cnss/recovery 1
 

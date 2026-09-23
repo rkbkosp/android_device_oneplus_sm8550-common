@@ -1,0 +1,16 @@
+#
+# SPDX-FileCopyrightText: The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# com.android.server.am.apm.KernelKnobWriter (ApmConstants.FG_UIDS_PATH and
+# ApmConstants.SWAPPINESS_PATH) writes /proc/fg_info/fg_uids and
+# /sys/module/oplus_bsp_zram_opt/parameters/vm_swappiness. It calls
+# File.exists() (getattr) before opening the file for write, and it opens with
+# O_WRONLY|O_CREAT|O_TRUNC; for these non-regular files no truncate happens and
+# the existing file needs no create permission. Directory traversal for the
+# sysfs node is already covered by system_server.te's sysfs_type:dir r_dir_perms
+# allow, so only the proc node needs its own dir rule.
+allow system_server proc_oplus_mm_bg:dir search;
+allow system_server proc_oplus_mm_bg:file rw_file_perms;
+allow system_server sysfs_oplus_zram_opt:file { getattr w_file_perms };
