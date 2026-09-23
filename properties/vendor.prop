@@ -53,7 +53,17 @@ bluetooth.profile.pan.nap.enabled?=true
 bluetooth.profile.pan.panu.enabled?=true
 bluetooth.profile.pbap.server.enabled?=true
 bluetooth.profile.sap.server.enabled?=true
-persist.bluetooth.a2dp_offload.disabled=false
+# A2DP offload stays off for this port. LHDC is host encoded (liblhdc in the
+# Bluetooth APEX), and the audio HAL picks the datapath from the global offload
+# state rather than per codec: with offload enabled it opens
+# A2DP_HARDWARE_OFFLOAD_ENCODING_DATAPATH (session_type=2) for every A2DP stream,
+# which this device cannot do for LHDC - the vendor capability string lists no
+# lhdc and the ADSP has no LHDC encoder - so open_a2dp_source fails with status
+# -1 on every retry. An A2DP codec cannot be kept on the software session while
+# offload is on, so the switch is the only lever. The stock Qualcomm Bluetooth
+# audio HAL installed by this port serves the software session for every codec it
+# supports, LHDC included.
+persist.bluetooth.a2dp_offload.disabled=true
 persist.vendor.bt.aac_frm_ctl.enabled=true
 persist.vendor.bt.aac_vbr_frm_ctl.enabled=true
 persist.vendor.qcom.bluetooth.a2dp_offload_cap=sbc-aptx-aptxtws-aptxhd-aac-ldac-aptxadaptiver2
