@@ -53,13 +53,7 @@ bluetooth.profile.pan.nap.enabled?=true
 bluetooth.profile.pan.panu.enabled?=true
 bluetooth.profile.pbap.server.enabled?=true
 bluetooth.profile.sap.server.enabled?=true
-# A2DP offload stays off: the stock QTI audio HAL advertises LHDC in its offload
-# ProviderInfo, so the stack routes LHDC to A2DP_HARDWARE_OFFLOAD_ENCODING_DATAPATH
-# (session_type=2) and open_a2dp_source then fails with status -1 on every retry --
-# the offload path has no LHDC encoder (a2dp_offload_cap below lists no lhdc) and the
-# ADSP firmware carries none. LHDC is host encoded by the stack's own liblhdc, i.e.
-# the software datapath, so the offload datapath must not be advertised as usable.
-persist.bluetooth.a2dp_offload.disabled=true
+persist.bluetooth.a2dp_offload.disabled=false
 persist.vendor.bt.aac_frm_ctl.enabled=true
 persist.vendor.bt.aac_vbr_frm_ctl.enabled=true
 persist.vendor.qcom.bluetooth.a2dp_offload_cap=sbc-aptx-aptxtws-aptxhd-aac-ldac-aptxadaptiver2
