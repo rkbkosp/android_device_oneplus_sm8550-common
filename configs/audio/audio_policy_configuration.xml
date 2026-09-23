@@ -527,13 +527,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         <module name="bluetooth_qti" halVersion="2.0">
             <mixPorts>
-               <mixPort name="a2dp_lhdc output" role="source"
-                        flags="AUDIO_OUTPUT_FLAG_SPATIALIZER">
-                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
-                             samplingRates="44100 48000 96000" channelMasks="AUDIO_CHANNEL_OUT_STEREO AUDIO_CHANNEL_OUT_MONO"/>
-                    <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
-                             samplingRates="44100 48000 96000" channelMasks="AUDIO_CHANNEL_OUT_STEREO AUDIO_CHANNEL_OUT_MONO"/>
-               </mixPort>
                <!-- #ifndef OPLUS_FEATURE_BTAUDIO_AID
                  //fred.li@MULTIMEDIA.AUDIOSERVER.POLICY.1723426 2021/06/22 add for Hearing AIDs Audio Ports-->
                <mixPort name="hearing aid output" role="source">
@@ -544,41 +537,18 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                <!--endif OPLUS_FEATURE_BTAUDIO_AID-->
             </mixPorts>
             <devicePorts>
-            <!-- A2DP Audio Ports -->
-                <devicePort tagName="BT A2DP Out" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP" role="sink"
-                            encodedFormats="AUDIO_FORMAT_LHDC AUDIO_FORMAT_LHDC_LL">
-                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
-                             samplingRates="44100 48000 96000" channelMasks="AUDIO_CHANNEL_OUT_STEREO AUDIO_CHANNEL_OUT_MONO"/>
-                    <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
-                             samplingRates="44100 48000 96000" channelMasks="AUDIO_CHANNEL_OUT_STEREO AUDIO_CHANNEL_OUT_MONO"/>
-                </devicePort>
-                <devicePort tagName="BT A2DP Headphones" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES" role="sink"
-                            encodedFormats="AUDIO_FORMAT_LHDC AUDIO_FORMAT_LHDC_LL">
-                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
-                             samplingRates="44100 48000 96000" channelMasks="AUDIO_CHANNEL_OUT_STEREO AUDIO_CHANNEL_OUT_MONO"/>
-                    <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
-                             samplingRates="44100 48000 96000" channelMasks="AUDIO_CHANNEL_OUT_STEREO AUDIO_CHANNEL_OUT_MONO"/>
-
-                </devicePort>
-                <devicePort tagName="BT A2DP Speaker" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER" role="sink"
-                            encodedFormats="AUDIO_FORMAT_LHDC AUDIO_FORMAT_LHDC_LL">
-                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
-                             samplingRates="44100 48000 96000" channelMasks="AUDIO_CHANNEL_OUT_STEREO AUDIO_CHANNEL_OUT_MONO"/>
-                    <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
-                             samplingRates="44100 48000 96000" channelMasks="AUDIO_CHANNEL_OUT_STEREO AUDIO_CHANNEL_OUT_MONO"/>
-                </devicePort>
+                <!-- No A2DP port here: LHDC is host encoded by the Bluetooth stack over
+                     the software datapath and must not be declared as an offload format.
+                     Declaring it here made the policy route LHDC to the ADSP offload path,
+                     which has no LHDC encoder, and the HAL then failed to open the stream
+                     (session_type=2, status -1). A2DP PCM goes through the primary module,
+                     whose BT A2DP ports already carry this device. -->
                 <!-- #ifndef OPLUS_FEATURE_BTAUDIO_AID
                  //fred.li@MULTIMEDIA.AUDIOSERVER.POLICY.1723426 2021/06/22 add for Hearing AIDs Audio Ports-->
                 <devicePort tagName="BT Hearing Aid Out" type="AUDIO_DEVICE_OUT_HEARING_AID" role="sink"/>
                 <!--endif OPLUS_FEATURE_BTAUDIO_AID-->
             </devicePorts>
             <routes>
-                <route type="mix" sink="BT A2DP Out"
-                        sources="a2dp_lhdc output"/>
-                <route type="mix" sink="BT A2DP Headphones"
-                        sources="a2dp_lhdc output"/>
-                <route type="mix" sink="BT A2DP Speaker"
-                        sources="a2dp_lhdc output"/>
                 <!-- #ifndef OPLUS_FEATURE_BTAUDIO_AID fred.li@MULTIMEDIA.AUDIOSERVER.POLICY.1723426 2021/06/22 add for Hearing AIDs Audio Ports-->
                 <route type="mix" sink="BT Hearing Aid Out"
                         sources="hearing aid output"/>
