@@ -367,17 +367,17 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                              samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_MONO AUDIO_CHANNEL_OUT_STEREO"/>
                 </devicePort>
                 <devicePort tagName="BT A2DP Out" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP" role="sink"
-                            encodedFormats="AUDIO_FORMAT_SBC AUDIO_FORMAT_AAC AUDIO_FORMAT_APTX AUDIO_FORMAT_APTX_HD AUDIO_FORMAT_LDAC AUDIO_FORMAT_CELT AUDIO_FORMAT_APTX_ADAPTIVE AUDIO_FORMAT_APTX_TWSP">
+                            encodedFormats="AUDIO_FORMAT_APTX AUDIO_FORMAT_APTX_HD AUDIO_FORMAT_LDAC AUDIO_FORMAT_CELT AUDIO_FORMAT_APTX_ADAPTIVE AUDIO_FORMAT_APTX_TWSP">
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
                              samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                 </devicePort>
                 <devicePort tagName="BT A2DP Headphones" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES" role="sink"
-                            encodedFormats="AUDIO_FORMAT_SBC AUDIO_FORMAT_AAC AUDIO_FORMAT_APTX AUDIO_FORMAT_APTX_HD AUDIO_FORMAT_LDAC AUDIO_FORMAT_CELT AUDIO_FORMAT_APTX_ADAPTIVE AUDIO_FORMAT_APTX_TWSP">
+                            encodedFormats="AUDIO_FORMAT_APTX AUDIO_FORMAT_APTX_HD AUDIO_FORMAT_LDAC AUDIO_FORMAT_CELT AUDIO_FORMAT_APTX_ADAPTIVE AUDIO_FORMAT_APTX_TWSP">
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
                              samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                 </devicePort>
                 <devicePort tagName="BT A2DP Speaker" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER" role="sink"
-                            encodedFormats="AUDIO_FORMAT_SBC AUDIO_FORMAT_AAC AUDIO_FORMAT_APTX AUDIO_FORMAT_APTX_HD AUDIO_FORMAT_LDAC AUDIO_FORMAT_CELT AUDIO_FORMAT_APTX_ADAPTIVE AUDIO_FORMAT_APTX_TWSP">
+                            encodedFormats="AUDIO_FORMAT_APTX AUDIO_FORMAT_APTX_HD AUDIO_FORMAT_LDAC AUDIO_FORMAT_CELT AUDIO_FORMAT_APTX_ADAPTIVE AUDIO_FORMAT_APTX_TWSP">
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
                              samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                 </devicePort>
@@ -525,13 +525,9 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         </module>
 
-        <!-- Software (host encoded) A2DP path. This module is what makes the audio HAL load the
-             AOSP Bluetooth audio HAL (audio.bluetooth.default.so), whose AIDL provider is the
-             one the platform Bluetooth stack talks to. Without it the policy only offered the
-             QTI HIDL offload module, no AIDL provider was registered
-             (aidl_client_enabled=0 qti_audio_hal_2_1=0 qti_audio_hal=0) and every A2DP stream,
-             LHDC and AAC alike, failed with "bluetooth provider session is not avail" and
-             open_a2dp_source status -1. Ports are PCM only: this is not an offload path. -->
+        <!-- Host-encoded A2DP path through audio.bluetooth.default.so. The Bluetooth AIDL
+             provider is registered separately by android.hardware.audio.service. AAC, SBC,
+             and LHDC use these PCM ports; codecs declared on primary can retain offload. -->
         <module name="bluetooth" halVersion="2.0">
             <mixPorts>
                 <!-- A2DP Audio Ports -->
@@ -572,37 +568,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                        sources="a2dp output"/>
                 <route type="mix" sink="BT Hearing Aid Out"
                        sources="hearing aid output"/>
-            </routes>
-        </module>
-
-        <module name="bluetooth_qti" halVersion="2.0">
-            <mixPorts>
-               <!-- #ifndef OPLUS_FEATURE_BTAUDIO_AID
-                 //fred.li@MULTIMEDIA.AUDIOSERVER.POLICY.1723426 2021/06/22 add for Hearing AIDs Audio Ports-->
-               <mixPort name="hearing aid output" role="source">
-                   <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
-                       samplingRates="24000 16000"
-                       channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
-               </mixPort>
-               <!--endif OPLUS_FEATURE_BTAUDIO_AID-->
-            </mixPorts>
-            <devicePorts>
-                <!-- No A2DP port here: LHDC is host encoded by the Bluetooth stack over
-                     the software datapath and must not be declared as an offload format.
-                     Declaring it here made the policy route LHDC to the ADSP offload path,
-                     which has no LHDC encoder, and the HAL then failed to open the stream
-                     (session_type=2, status -1). A2DP PCM goes through the primary module,
-                     whose BT A2DP ports already carry this device. -->
-                <!-- #ifndef OPLUS_FEATURE_BTAUDIO_AID
-                 //fred.li@MULTIMEDIA.AUDIOSERVER.POLICY.1723426 2021/06/22 add for Hearing AIDs Audio Ports-->
-                <devicePort tagName="BT Hearing Aid Out" type="AUDIO_DEVICE_OUT_HEARING_AID" role="sink"/>
-                <!--endif OPLUS_FEATURE_BTAUDIO_AID-->
-            </devicePorts>
-            <routes>
-                <!-- #ifndef OPLUS_FEATURE_BTAUDIO_AID fred.li@MULTIMEDIA.AUDIOSERVER.POLICY.1723426 2021/06/22 add for Hearing AIDs Audio Ports-->
-                <route type="mix" sink="BT Hearing Aid Out"
-                        sources="hearing aid output"/>
-                <!--endif /* OPLUS_FEATURE_BTAUDIO_AID */ -->
             </routes>
         </module>
 

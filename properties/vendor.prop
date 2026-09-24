@@ -12,7 +12,7 @@ vendor.audio.adm.buffering.ms=2
 vendor.audio.c2.preferred=true
 vendor.audio.flac.sw.decoder.24bit=true
 vendor.audio.enable.mirrorlink=false
-vendor.audio.feature.a2dp_offload.enable=true
+vendor.audio.feature.a2dp_offload.enable?=true
 vendor.audio.feature.afe_proxy.enable=true
 vendor.audio.feature.battery_listener.enable=true
 vendor.audio.feature.dmabuf.cma.memory.enable=false
@@ -53,23 +53,15 @@ bluetooth.profile.pan.nap.enabled?=true
 bluetooth.profile.pan.panu.enabled?=true
 bluetooth.profile.pbap.server.enabled?=true
 bluetooth.profile.sap.server.enabled?=true
-# A2DP offload stays off for this port. LHDC is host encoded (liblhdc in the
-# Bluetooth APEX), and the audio HAL picks the datapath from the global offload
-# state rather than per codec: with offload enabled it opens
-# A2DP_HARDWARE_OFFLOAD_ENCODING_DATAPATH (session_type=2) for every A2DP stream,
-# which this device cannot do for LHDC - the vendor capability string lists no
-# lhdc and the ADSP has no LHDC encoder - so open_a2dp_source fails with status
-# -1 on every retry. An A2DP codec cannot be kept on the software session while
-# offload is on, so the switch is the only lever. The stock Qualcomm Bluetooth
-# audio HAL installed by this port serves the software session for every codec it
-# supports, LHDC included.
-persist.bluetooth.a2dp_offload.disabled=true
+# Devices can override these defaults when their Bluetooth audio path uses
+# software encoding exclusively.
+persist.bluetooth.a2dp_offload.disabled?=false
 persist.vendor.bt.aac_frm_ctl.enabled=true
 persist.vendor.bt.aac_vbr_frm_ctl.enabled=true
 persist.vendor.qcom.bluetooth.a2dp_offload_cap=sbc-aptx-aptxtws-aptxhd-aac-ldac-aptxadaptiver2
 persist.vendor.qcom.bluetooth.aac_frm_ctl.enabled=true
 persist.vendor.qcom.bluetooth.aptxadaptiver2_1_support=true
-ro.bluetooth.a2dp_offload.supported=true
+ro.bluetooth.a2dp_offload.supported?=true
 
 # Camera
 persist.vendor.camera.privapp.list=org.lineageos.aperture,com.oplus.camera,com.ss.android.ugc.aweme,org.codeaurora.snapcam
